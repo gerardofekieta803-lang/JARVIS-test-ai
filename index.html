@@ -1,100 +1,423 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JARVIS AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JARVIS AI Assistant</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            background: #050816;
-            color: #00eaff;
-            font-family: Arial, sans-serif;
-            text-align: center;
-        }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-        h1 {
-            margin-top: 50px;
-            letter-spacing: 4px;
-            font-size: 36px;
-            text-shadow: 0 0 15px #00eaff;
-        }
+body {
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  background: #050816;
+  color: #00eaff;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
 
-        p {
-            color: #ffffff;
-            font-size: 16px;
-        }
+h1 {
+  margin-top: 25px;
+  letter-spacing: 4px;
+  text-shadow: 0 0 15px #00eaff;
+}
 
-        .jarvis-circle {
-            width: 150px;
-            height: 150px;
-            border: 3px solid #00eaff;
-            border-radius: 50%;
-            margin: 40px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            box-shadow: 0 0 25px #00eaff;
-            animation: pulse 2s infinite;
-        }
+.subtitle {
+  color: #a4eaff;
+  font-size: 14px;
+}
 
-        button {
-            background: transparent;
-            color: #00eaff;
-            border: 2px solid #00eaff;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 25px;
-            cursor: pointer;
-        }
+.core {
+  width: 150px;
+  height: 150px;
+  margin: 30px auto;
+  border: 3px solid #00eaff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 25px #00eaff,
+              inset 0 0 25px #0077ff;
+  animation: pulse 2s infinite;
+}
 
-        button:hover {
-            background: #00eaff;
-            color: #050816;
-            box-shadow: 0 0 20px #00eaff;
-        }
+.core span {
+  font-size: 35px;
+  font-weight: bold;
+}
 
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 10px #00eaff;
-            }
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 20px #00eaff;
+  }
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 40px #0077ff;
+  }
+}
 
-            50% {
-                box-shadow: 0 0 30px #00eaff;
-            }
+button, select, input {
+  width: 100%;
+  max-width: 420px;
+  padding: 13px;
+  margin: 7px auto;
+  border-radius: 10px;
+  font-size: 16px;
+}
 
-            100% {
-                box-shadow: 0 0 10px #00eaff;
-            }
-        }
-    </style>
+button {
+  display: block;
+  border: 1px solid #00eaff;
+  background: #071b32;
+  color: #00eaff;
+  cursor: pointer;
+}
+
+button:active {
+  background: #003b56;
+}
+
+input, select {
+  background: #0b1428;
+  border: 1px solid #00aaff;
+  color: white;
+}
+
+#status {
+  min-height: 25px;
+  color: #a4eaff;
+}
+
+.panel {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 15px;
+  border: 1px solid #075c83;
+  border-radius: 12px;
+  background: #081226;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.label {
+  color: #00eaff;
+  font-weight: bold;
+}
+
+#answer {
+  color: white;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+footer {
+  margin-top: 30px;
+  color: #688ba8;
+  font-size: 12px;
+}
+</style>
 </head>
 
 <body>
 
-    <h1>JARVIS AI</h1>
+<h1>JARVIS AI</h1>
+<p class="subtitle">YOUR PERSONAL AI ASSISTANT</p>
 
-    <p>Your Personal AI Assistant</p>
+<div class="core">
+  <span>J</span>
+</div>
 
-    <div class="jarvis-circle">
-        AI
-    </div>
+<p id="status">JARVIS প্রস্তুত। / JARVIS is ready.</p>
 
-    <p id="status">System Ready</p>
+<label for="language">ভাষা নির্বাচন করো / Select language</label>
 
-    <button onclick="startJarvis()">
-        Activate JARVIS
-    </button>
+<select id="language">
+  <option value="bn-BD">বাংলা (Bangla)</option>
+  <option value="en-US">English</option>
+</select>
 
-    <script>
-        function startJarvis() {
-            document.getElementById("status").textContent =
-                "JARVIS Interface Activated!";
-        }
-    </script>
+<button id="micButton" onclick="listen()">
+  🎤 কথা বলো / Speak
+</button>
+
+<button onclick="stopSpeaking()">
+  🔇 কথা থামাও / Stop voice
+</button>
+
+<div class="panel">
+  <p class="label">তোমার কথা / Your command</p>
+  <p id="heard">এখানে তোমার কথা দেখা যাবে।</p>
+</div>
+
+<input
+  id="question"
+  type="text"
+  placeholder="এখানে প্রশ্ন লেখো / Type here"
+  onkeydown="if(event.key==='Enter') sendText()"
+>
+
+<button onclick="sendText()">
+  ➤ পাঠাও / Send
+</button>
+
+<div class="panel">
+  <p class="label">JARVIS-এর উত্তর / JARVIS response</p>
+  <div id="answer">হ্যালো! আমি JARVIS। আমার সঙ্গে কথা বলো।</div>
+</div>
+
+<footer>
+  JARVIS AI • Personal Voice Assistant
+</footer>
+
+<script>
+const statusText = document.getElementById("status");
+const heardText = document.getElementById("heard");
+const answerText = document.getElementById("answer");
+const languageSelect = document.getElementById("language");
+const questionInput = document.getElementById("question");
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+let recognition = null;
+let listening = false;
+
+function setStatus(message) {
+  statusText.textContent = message;
+}
+
+function speak(message) {
+  if (!("speechSynthesis" in window)) {
+    setStatus("এই ব্রাউজারে voice output সমর্থিত নয়।");
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(message);
+  utterance.lang = languageSelect.value;
+  utterance.rate = 0.95;
+  utterance.pitch = 1;
+
+  utterance.onstart = () => {
+    setStatus("JARVIS কথা বলছে...");
+  };
+
+  utterance.onend = () => {
+    if (!listening) {
+      setStatus("JARVIS প্রস্তুত।");
+    }
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
+function stopSpeaking() {
+  if ("speechSynthesis" in window) {
+    speechSynthesis.cancel();
+  }
+
+  if (recognition && listening) {
+    recognition.stop();
+  }
+
+  setStatus("ভয়েস বন্ধ করা হয়েছে।");
+}
+
+function listen() {
+  if (!SpeechRecognition) {
+    answerText.textContent =
+      "তোমার ব্রাউজারে speech recognition সমর্থিত নয়। " +
+      "Android ফোনে Chrome ব্যবহার করে HTTPS ও microphone permission পরীক্ষা করো।";
+    setStatus("মাইক্রোফোন চালু করা যায়নি।");
+    return;
+  }
+
+  if (listening) {
+    recognition.stop();
+    return;
+  }
+
+  recognition = new SpeechRecognition();
+  recognition.lang = languageSelect.value;
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onstart = () => {
+    listening = true;
+    setStatus("শুনছি... এখন কথা বলো।");
+    document.getElementById("micButton").textContent =
+      "⏹️ শোনা বন্ধ করো / Stop listening";
+  };
+
+  recognition.onresult = (event) => {
+    const text = event.results[0][0].transcript;
+
+    heardText.textContent = text;
+    questionInput.value = text;
+
+    handleCommand(text);
+  };
+
+  recognition.onerror = (event) => {
+    setStatus("মাইক্রোফোন সমস্যা: " + event.error);
+  };
+
+  recognition.onend = () => {
+    listening = false;
+
+    document.getElementById("micButton").textContent =
+      "🎤 কথা বলো / Speak";
+
+    if (statusText.textContent.startsWith("শুনছি")) {
+      setStatus("JARVIS প্রস্তুত।");
+    }
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    setStatus("মাইক্রোফোন চালু হয়নি। আবার চেষ্টা করো।");
+  }
+}
+
+function respond(message, shouldSpeak = true) {
+  answerText.textContent = message;
+
+  if (shouldSpeak) {
+    speak(message);
+  }
+}
+
+function handleCommand(rawText) {
+  const text = rawText.toLowerCase().trim();
+  const lang = languageSelect.value;
+
+  const isBangla = lang.startsWith("bn");
+
+  const replies = isBangla
+    ? {
+        hello: "হ্যালো! আমি JARVIS। বলো, কীভাবে সাহায্য করতে পারি?",
+        name: "আমার নাম JARVIS। আমি তোমার ব্যক্তিগত ভয়েস অ্যাসিস্ট্যান্ট।",
+        time: "এখন সময় " + new Date().toLocaleTimeString("bn-BD"),
+        date: "আজ " + new Date().toLocaleDateString("bn-BD", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }),
+        help: "তুমি বলতে পারো: সময় বলো, তারিখ বলো, গুগল খোলো, ইউটিউব খোলো, অথবা আমার নাম কী।",
+        unknown: "দুঃখিত, এই কমান্ডটি এখনো বুঝতে পারিনি। অন্যভাবে বলো।"
+      }
+    : {
+        hello: "Hello! I am JARVIS. How can I help you?",
+        name: "My name is JARVIS, your personal voice assistant.",
+        time: "The time is " + new Date().toLocaleTimeString("en-US"),
+        date: "Today is " + new Date().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        }),
+        help: "You can ask for the time, date, open Google, open YouTube, or ask my name.",
+        unknown: "Sorry, I don't understand that command yet. Please try another command."
+      };
+
+  if (
+    text.includes("গুগল খোলো") ||
+    text.includes("গুগল চালু") ||
+    text.includes("open google")
+  ) {
+    respond(isBangla ? "গুগল খুলছি।" : "Opening Google.");
+    window.open("https://www.google.com/", "_blank");
+    return;
+  }
+
+  if (
+    text.includes("ইউটিউব খোলো") ||
+    text.includes("ইউটিউব চালু") ||
+    text.includes("open youtube")
+  ) {
+    respond(isBangla ? "ইউটিউব খুলছি।" : "Opening YouTube.");
+    window.open("https://www.youtube.com/", "_blank");
+    return;
+  }
+
+  if (
+    text.includes("সময়") ||
+    text.includes("কয়টা বাজে") ||
+    text.includes("time")
+  ) {
+    respond(replies.time);
+    return;
+  }
+
+  if (
+    text.includes("তারিখ") ||
+    text.includes("আজ কত") ||
+    text.includes("date")
+  ) {
+    respond(replies.date);
+    return;
+  }
+
+  if (
+    text.includes("তোমার নাম") ||
+    text.includes("তোমাকে কী বলে") ||
+    text.includes("your name") ||
+    text.includes("who are you")
+  ) {
+    respond(replies.name);
+    return;
+  }
+
+  if (
+    text.includes("হ্যালো") ||
+    text.includes("হাই") ||
+    text.includes("hello") ||
+    text.includes("hi jarvis")
+  ) {
+    respond(replies.hello);
+    return;
+  }
+
+  if (
+    text.includes("সাহায্য") ||
+    text.includes("কি করতে পারো") ||
+    text.includes("help")
+  ) {
+    respond(replies.help);
+    return;
+  }
+
+  respond(replies.unknown);
+}
+
+function sendText() {
+  const text = questionInput.value.trim();
+
+  if (!text) {
+    setStatus("আগে কিছু লেখো অথবা মাইক্রোফোনে কথা বলো।");
+    return;
+  }
+
+  heardText.textContent = text;
+  handleCommand(text);
+}
+
+languageSelect.addEventListener("change", () => {
+  setStatus(
+    languageSelect.value === "bn-BD"
+      ? "বাংলা ভাষা নির্বাচন করা হয়েছে।"
+      : "English selected."
+  );
+});
+</script>
 
 </body>
 </html>
